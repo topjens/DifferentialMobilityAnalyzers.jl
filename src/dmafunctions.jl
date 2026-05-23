@@ -551,6 +551,11 @@ V = range(10, stop = 10000, length=121)
     De = ztod(Λ, 1, Ze)
     ΔlnD = log.(De[1:end-1] ./ De[2:end])
 
+    function Ωav(Λ::DMAconfig, i::Int, k::Int; nint = 20)
+        Vex = mylogspace(Ve[i], Ve[i+1], nint)
+        return mapreduce(zˢ -> Ω(Λ, Z, zˢ / k, k), +, vtoz(Λ, Vex)) / nint
+    end
+
     T = (i, k, Λ) -> Ωav(Λ, i, k) .* Tc(k, Dp) .* Tl(Λ, Z, k)
     𝐀 = (hcat(map(i -> Σ(k -> T(i, k, Λ), Λ.m), 1:bins)...))'
     𝐎 = (hcat(map(i -> Σ(k -> Ωav(Λ, i, k) .* Tl(Λ, Dp), 1), 1:bins)...))'
